@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "tf_entropy"
+version = "0.1.0"
+description = "Paquete del trabajo de grado donde se implementa tf-entropy"
+authors = ["Santiago Bello <isbelloq@unal.edu.co>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+neovim = "^0.3.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
