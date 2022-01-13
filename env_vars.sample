@@ -1,0 +1,2 @@
+export FIGURE_PATH="" #Path de almacenamiento de figuras
+export DATALAKE_PATH="" #Path de almacenamiento de datos
