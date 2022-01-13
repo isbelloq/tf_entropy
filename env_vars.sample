@@ -1,3 +1,12 @@
+#Ruta de almacenamiento de graficas
 export FIGURE_PATH="" #Path de almacenamiento de figuras
-export DATALAKE_PATH="" #Path de almacenamiento de datos
+
+#Ruta del proyecto
 export PROJECT_PATH="" #Path del proyecto
+
+#Ruta de DataLake
+export DATALAKE_PATH="" #Path de almacenamiento de datos
+export RAW_PATH="" #Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Raw
+export BRONZE_PATH=""#Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Bronze
+export SILVER_PATH=""#Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Silver
+export GOLD_PATH=""#Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Gold

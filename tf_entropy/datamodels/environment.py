@@ -7,15 +7,15 @@ class DataLakePath(BaseModel):
     Attributes
     ----------
     data_lake_paht : str
-        Path base del lago de datos
+        Folder del lago de datos
     raw_path : str
-        Raw path con base en el lago de datos
+        Folder de los archivos en la capa Raw
     bronze_path : str
-        Bronze path con base en el lago de datos
+        Folder de los archivos en la capa Bronze
     silver_path : str
-        Silver path con base en el lago de datos
+        Folder de los archivos en la capa Silver
     gold_path : str
-        Gold path con base en el lago de datos
+        Folder de los archivos en la capa Gold
     """
     data_lake_paht : str
     raw_path : str
