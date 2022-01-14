@@ -11,6 +11,8 @@ datalake = get_data_paths()
 raw_path = os.path.join(datalake.raw_path, 'toymodel/data/DATE=2022-01-12')
 file_name = 'austen_books.csv'
 
+#Lectura de infromación
 austen_df = load_data_to_dataframe(lake_path = raw_path, file_name=file_name)
+# -
 
-austen_df.head()
+

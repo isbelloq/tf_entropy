@@ -19,7 +19,7 @@ def load_data_to_dataframe(lake_path:str, file_name: str) -> DataFrame:
         DataFrame con la informacion cargada
     """
     # TODO: Cambio separador por defecto de ',' a algo paramétrico
-    # TODO: Cambio de lectura de header = True por defecto a algo paramétrico
+    # TODO: Cambio para recivir **kwArgs
     # FIXME:
     # TODOC:
 

@@ -10,6 +10,9 @@ def get_data_paths() -> DataLakePath:
     paths : DataLakePath
         Objeto con los paths del lago de datos.
     """
+    # TODO: Modificación para extración de datos por fecha
+    # TODO: Para extracción de datos por diseño de almacenamiento en datalake
+
     paths = DataLakePath(
         data_lake_paht= os.environ['DATALAKE_PATH'],
         raw_path= os.path.join(os.environ['DATALAKE_PATH'], os.environ['RAW_PATH']),
