@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from tf_entropy.environment.base import get_data_paths
-from tf_entropy.database.io import load_data_to_dataframe
+from tf_entropy.database.io import load_data_to_dataframe, save_dataframe
 import os
 
 # # Carga de datos
@@ -13,8 +13,15 @@ datalake = get_data_paths()
 raw_file_path = os.path.join(datalake.raw_path, 'toymodel/data/DATE=2022-01-12')
 raw_file_name = 'austen_books.csv'
 
+bronze_file_path = os.path.join(datalake.bronze_path, 'toymodel/data/YEAR=2022/MONTH=01/DAY=14_22-03')
+bornze_file_name = 'austen.parquet'
+
 #Carga de datos raw
-df = load_data_to_dataframe(lake_path=raw_file_path, file_name=raw_file_name)
+df = load_data_to_dataframe(
+        lake_path=raw_file_path,
+        file_name=raw_file_name,
+        sep = ',',
+        encoding='windows-1252')
 # -
 
 # # Extracción de capítulos (solo válido para toymodel)
@@ -41,10 +48,12 @@ df.dropna(inplace=True)
 df.reset_index(drop = True, inplace = True)
 # -
 
-# # Homologación de texto
+# # Almacenamiento en bronce
 
-df
+# +
+#Creación de path si no existe
+if bronze_file_path not in [*map(lambda x: x[0], os.walk(datalake.bronze_path))]:
+    os.makedirs(bronze_file_path)
 
-df.loc[df['book'] == 'Emma',:].tail(20)
-
-df.dropna().loc[df['book'] == 'Pride & Prejudice',['book','chapter']].drop_duplicates()
+#Almacenamiento en parquet
+save_dataframe(dataframe=df, lake_path=bronze_file_path, file_name=bornze_file_name)
