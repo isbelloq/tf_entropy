@@ -10,3 +10,6 @@ export RAW_PATH="" #Ruta relativa con base en DATALAKE_PATH de almacenamiento en
 export BRONZE_PATH=""#Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Bronze
 export SILVER_PATH=""#Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Silver
 export GOLD_PATH=""#Ruta relativa con base en DATALAKE_PATH de almacenamiento en capa Gold
+
+#Configuraion de Spark
+export JAVA_HOME="" #Ruta de java-8-openjdk

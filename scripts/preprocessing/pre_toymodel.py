@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
 # +
 from tf_entropy.environment.base import get_data_paths
+from tf_entropy.environment.spark import create_spark_session
 from tf_entropy.database.io import load_data_to_spark, save_spark
 import os
 
-import pyspark
-from delta import *
-
-#Configuración de Spark
-os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
-builder = pyspark.sql.SparkSession.builder.appName("MyApp") \
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
+spark = create_spark_session()
 # -
 
 # # Carga de datos
