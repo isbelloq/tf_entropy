@@ -1,34 +1,6 @@
-from tf_entropy.preprocessing.text import normalize_text, spark_split, token_frequency, spark_tf_idf, spark_tf_ent, spark_log_ent
+from tf_entropy.preprocessing.text import token_frequency, spark_tf_idf, spark_tf_ent, spark_log_ent
 from pyspark.sql import DataFrame as SparkDataFrame
 from pyspark.sql.functions import explode, lit
-
-def token_pipeline(df: SparkDataFrame, text_col:str, spacy_model:str = 'es_core_news_sm') -> SparkDataFrame:
-    '''
-    Pipeline para obtención de tokens
-    
-    Parameters
-    ----------
-    df: SparkDataFrame
-        Dataframe con el texto
-    text_col:str
-        Nombre de la columna con el texto
-    spacy_model:str
-        Modelo de spaCy para tokenizar, por defecto `es_core_news_sm`
-        
-    Returns
-    -------
-    df_tokens:SparkDataFrame
-        Dataset con la columna de tokens
-    '''
-    
-    #Definición de flujo de procesamiento 
-    prepros_text = normalize_text(text_col)
-    prepros_text = spark_split(prepros_text, lit(spacy_model))
-    prepros_text = explode(prepros_text)
-
-    df_tokens = df.withColumn('token', prepros_text).drop(text_col)
-
-    return df_tokens
 
 def tfidf_pipeline(df: SparkDataFrame, token_col:str, document_col:str) -> SparkDataFrame:
     '''

@@ -3,8 +3,8 @@
 from tf_entropy.environment.base import get_data_paths
 from tf_entropy.environment.spark import create_spark_session
 from tf_entropy.database.io import load_data_to_spark, save_spark
-from tf_entropy.preprocessing.text import normalize_text
-from tf_entropy.preprocessing.pipeline import token_pipeline, tfidf_pipeline, tfent_pipeline
+from tf_entropy.preprocessing.text import normalize_text, count_token_by_doc
+from tf_entropy.preprocessing.pipeline import tfidf_pipeline, tfent_pipeline
 from tf_entropy.visualization.eda import wordcloud_graph, plot_top_n_ir
 
 from pyspark.sql.functions import concat_ws, collect_list
@@ -66,15 +66,18 @@ for index, row in austen_wc.iterrows():
 
 # ## Frecuencia de aparición de palablas
 
-austen_tokens = token_pipeline(df=austen_df,
-                               text_col = 'text',
-                               spacy_model = 'en_core_web_sm')
+austen_tokens = count_token_by_doc(df=austen_df,
+                                    text_col = 'text',
+                                    document_col = 'book',
+                                    spacy_model = 'en_core_web_sm')
 
-# +
-# save_spark(dataframe=austen_tokens, lake_path=silver_path, file_name=silver_file_name)
-# austen_tokens = load_data_to_spark(lake_path = silver_path, file_name=silver_file_name)
+save_spark(dataframe=austen_tokens,
+           lake_path=silver_path,
+           file_name=silver_file_name,
+           overwriteSchema='true')
 
-# +
+austen_tokens = load_data_to_spark(lake_path = silver_path, file_name=silver_file_name)
+
 #Pipeline tf-idf
 austen_tfidf = tfidf_pipeline(df=austen_tokens,
                               document_col='book',
@@ -84,7 +87,6 @@ austen_tfidf = tfidf_pipeline(df=austen_tokens,
 austen_tfEnt = tfent_pipeline(df=austen_tokens,
                       document_col='book',
                       token_col='token')
-# -
 
 #Distribución de la frecuencia de los términos en las novelas de Jane Austen 
 fig = px.histogram(austen_tfidf.toPandas(),
