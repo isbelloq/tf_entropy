@@ -1,4 +1,8 @@
 import spacy
+import nltk
+nltk.download("stopwords")
+from nltk.tokenize import wordpunct_tokenize
+from nltk.corpus import stopwords
 from pyspark.sql import DataFrame as SparkDataFrame
 from pyspark.sql.functions import udf, col, lower, regexp_replace, trim, countDistinct, log, log2, lit, sum, explode, concat_ws, collect_list
 from pyspark.sql.types import StructType, LongType,StringType,ArrayType, StructField
@@ -36,7 +40,7 @@ def normalize_text(column:str) -> col:
     normalize = regexp_replace(normalize, r'ù', 'ú')
         
     #Limpieza de caracteres
-    normalize = regexp_replace(normalize, r'[^a-záéíóúüñ ]', ' ')
+    normalize = regexp_replace(normalize, '[^a-záéíóúüñ ]', ' ')
     
     #Normalización de espacios
     normalize = regexp_replace(normalize, r'\s+', ' ')
@@ -65,10 +69,37 @@ def spark_token_counter(text: str, spacy_model: str = 'es_core_news_sm') -> List
         Lista con una tupla de (token,n)
     '''
     nlp = spacy.load(spacy_model)
-    doc = nlp(text)
-    tokens = [token.text for token in doc]
+    nlp.max_length = 8000000 
+    doc = nlp(text, disable = ['tok2vec', 'morphologizer', 'parser', 'attribute_ruler', 'lemmatizer', 'ner'])
+    tokens = [token.text for token in doc if not token.is_stop]
+    tokens = [token for token in tokens if len(token) > 1]
     tokens = [*Counter(tokens).items()]
+    return tokens
+
+@udf(returnType= ArrayType(
+    StructType(
+        [StructField("token",StringType()),
+        StructField("n",LongType())])))
+def spark_nltk_token_counter(text: str, language: str = 'spanish') -> List[Tuple[str,int]]:
+    '''
+    Función de conteo de tokens en un texto texto
     
+    Parameters
+    ----------
+    text : str
+        Texto a tokenizar
+    language : str
+        Idioma de corpus de stopwords de NLTK
+    
+    Returns
+    -------
+    tokens: List[Tuple[str,int]]
+        Lista con una tupla de (token,n)
+    '''
+    tokens = wordpunct_tokenize(text)
+    sw = stopwords.words(language)
+    tokens = [token for token in tokens if token not in sw]
+    tokens = [*Counter(tokens).items()]
     return tokens
 
 def token_split(text: str, spacy_model: str = 'es_core_news_sm') -> List[str]:
@@ -301,6 +332,71 @@ def count_token_by_doc(df:SparkDataFrame, document_col:str, text_col:str,spacy_m
     select(document_col,
            col('token_count').getItem('token').alias('token'),
            col('token_count').getItem('n').alias('n'))
+
+
+    return token_count
+
+def count_nltk_token_by_doc(df:SparkDataFrame, document_col:str, text_col:str,language:str = 'spanish' ) -> SparkDataFrame:
+    '''
+    Función de conteo de tokens por documento
+    
+    Parameters
+    ----------
+    df:SparkDataFrame
+        Conjunto de datos que debe tener la columna de documentos y la columna de texto
+    document_col:str
+        Nombre de la columna de documentos
+    text_col:str
+        Nombre de la columna del texto
+    language : str
+        Idioma del corpus de stopwords en NLTK
+    
+    Returns
+    -------
+    token_count: SparkDataFrame
+        Conjunto de datos con tres columnas, `document_col` nombre de la columna del documento,
+        `token` token en el documento y `count` frecuencia de aparición del token en el documento
+    '''
+    token_count = df.\
+    withColumn(text_col, normalize_text(text_col)).\
+    groupby(document_col).\
+    agg(concat_ws(' ',collect_list(text_col)).alias(text_col)).\
+    withColumn('token_count', spark_nltk_token_counter(text_col, lit(language))).\
+    withColumn('token_count', explode('token_count')).\
+    select(document_col,
+           col('token_count').getItem('token').alias('token'),
+           col('token_count').getItem('n').alias('n'))
+
+
+    return token_count
+
+def count_token_by_row(df:SparkDataFrame, text_col:str,spacy_model:str = 'es_core_news_sm' ) -> SparkDataFrame:
+    '''
+    Función de conteo de tokens por documento
+    
+    Parameters
+    ----------
+    df:SparkDataFrame
+        Conjunto de datos que debe tener la columna de documentos y la columna de texto
+    document_col:str
+        Nombre de la columna de documentos
+    text_col:str
+        Nombre de la columna del texto
+    spacy_model : str
+        Modelo de spaCy a uar, por defecto 'es_core_news_sm'
+    
+    Returns
+    -------
+    token_count: SparkDataFrame
+        Conjunto de datos con tres columnas, `document_col` nombre de la columna del documento,
+        `token` token en el documento y `count` frecuencia de aparición del token en el documento
+    '''
+    token_count = df.\
+    withColumn(text_col, normalize_text(text_col)).\
+    withColumn('token_count', explode(spark_token_counter(text_col, lit(spacy_model)))).\
+    withColumn('token', col('token_count').getItem('token')).\
+    withColumn('n', col('token_count').getItem('n')).\
+    drop('token_count')
 
 
     return token_count

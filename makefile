@@ -17,3 +17,8 @@ secop_raw_to_bronze:
 	@echo "Realizndo el proceso de transformacio datos del para SECOP I"
 	source env_vars.env && python scripts/preprocessing/pre_secop.py
 	@echo "Transformacio y almacenamiento exitoso"
+
+secop_eda:
+	@echo "Realizndo el proceso EDA para SECOP I"
+	source env_vars.env && python scripts/eda/eda_secop.py
+	@echo "EDA exitoso"

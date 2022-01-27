@@ -88,6 +88,6 @@ def plot_top_n_ir(df:SparkDataFrame,document_col:str, ir_col:str, token_col:str 
     elif order == 'ascending':
         fig.update_yaxes(autorange=True, matches=None, showticklabels=True, categoryorder = f'total descending')
 
-    fig.show()
+    return fig 
 
     

@@ -100,7 +100,7 @@ def cast_timestamp(df: SparkDataFrame, datadic: SparkDataFrameDic):
         
     return(df)
 
-def normalize_cat(df: SparkDataFrame, datadic: SparkDataFrameDic):
+def normalize_cat(df: SparkDataFrame, datadic: SparkDataFrameDic) -> SparkDataFrame:
     '''
     Función de normalización de categorias
 
@@ -129,4 +129,31 @@ def normalize_cat(df: SparkDataFrame, datadic: SparkDataFrameDic):
             withColumn(category_cols, regexp_replace(col(category_cols), r' +', r' ')).\
             withColumn(category_cols, trim(col(category_cols)))
     return(df)
-    
+
+def text_normalize_cat(text: str) -> str:
+    '''
+    Función de textos que representan de categorias
+
+    Parameters
+    ----------
+    text: str
+        Texto de una categoría
+        
+    Returns
+    -------
+    norm_text:str
+        Texto normalizado
+    '''
+    norm_text = text.upper()
+    norm_text = re.sub(r'Á', r'A', norm_text)
+    norm_text = re.sub(r'É', r'E', norm_text)
+    norm_text = re.sub(r'Í', r'I', norm_text)
+    norm_text = re.sub(r'Ó', r'O', norm_text)
+    norm_text = re.sub(r'Ú', r'U', norm_text)
+    norm_text = re.sub(r'Ü', r'U', norm_text)
+    norm_text = re.sub(r'[^A-Z0-9Ñ ]', r' ', norm_text)
+    norm_text = re.sub(r' +', r' ', norm_text)
+    norm_text = norm_text.strip()
+
+    return(norm_text)
+        
