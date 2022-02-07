@@ -21,6 +21,7 @@ wordcloud = "^1.8.1"
 nltk = "^3.6.7"
 geopandas = "^0.10.2"
 mapclassify = "^2.4.3"
+scikit-learn = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 neovim = "^0.3.1"

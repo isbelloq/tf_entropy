@@ -361,10 +361,12 @@ save_spark(dataframe=secop_tfidf,
 # +
 #Palabras con mayor peso de tf-idf
 fig = plot_top_n_ir(df=secop_tfidf,
-             document_col='clase',
-             ir_col='tf-idf')
-
+                    document_col='clase',
+                    ir_col='tf-idf',
+                    n=10)
+fig.update_layout(autosize=False,width=800, height=1200)
 fig.update(layout_showlegend=False)
+
 fig.show()
 # -
 
@@ -373,20 +375,21 @@ fig.show()
 # +
 #Pipeline tf-Entropy
 secop_tfEnt = tfent_pipeline(df=secop_tokens,
-                      document_col='clase',
-                      token_col='token')
+                             document_col='clase',
+                             token_col='token')
 
 save_spark(dataframe=secop_tfEnt,
            lake_path=silver_path,
            file_name='modelo_tfent.delta',
            overwriteSchema='true')
+# -
 
-# +
 #Palabras con mayor peso de tf-logEntropy en cada una de las novelas de Jane Austen 
 fig = plot_top_n_ir(df=secop_tfEnt,
-             document_col='clase',
-             ir_col='tf-Entropy')
-
+                    document_col='clase',
+                    ir_col='tf-Entropy',
+                    n=10)
+fig.update_layout(autosize=False,width=800, height=1200)
 fig.update(layout_showlegend=False)
 fig.show()
 
